@@ -111,7 +111,7 @@ namespace QuickEye.UxmlBridgeGen
         {
             var type = element.IsUnityEngineType ? element.TypeName : element.FullyQualifiedTypeName;
             var fieldIdentifier = codeStyleRules.privateField.Apply(element.NameAttribute);
-            return $"private {type} {fieldIdentifier};";
+            return $"public {type} {fieldIdentifier};";
         }
 
         private static string GetFieldAssigment(UxmlElement element, CodeStyleRules codeStyleRules)
