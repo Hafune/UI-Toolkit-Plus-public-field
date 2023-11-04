@@ -186,11 +186,11 @@ namespace QuickEye.UxmlBridgeGen
             {
                 var menu = new GenericMenu();
                 menu.AddItem(new GUIContent("Generate .gen.cs"), false, RegenerateGenCsFile);
-                menu.AddItem(new GUIContent("Generate .gen.cs + .cs"), false, () =>
-                {
-                    RegenerateGenCsFile();
-                    CreateCsFile();
-                });
+                // menu.AddItem(new GUIContent("Generate .gen.cs + .cs"), false, () =>
+                // {
+                //     RegenerateGenCsFile();
+                //     CreateCsFile();
+                // });
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("Open code gen settings"), false,
                     CodeGenProjectSettingsEditor.OpenSettings);
