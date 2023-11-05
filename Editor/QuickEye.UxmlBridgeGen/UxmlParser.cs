@@ -81,7 +81,7 @@ namespace QuickEye.UxmlBridgeGen
 
             foreach (Match match in matches)
                 if (match.Success && !match.Groups[0].Value.Contains(":"))
-                    set.Add(match.Groups[0].Value.Replace(".", ""));
+                    set.Add(match.Groups[0].Value.Replace(".", "").Trim());
 
             return set.ToArray(); // Path not found in the string
         }
