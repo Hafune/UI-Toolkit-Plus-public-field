@@ -1,7 +1,12 @@
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.UIElements;
 
 namespace QuickEye.UxmlBridgeGen
 {
@@ -14,14 +19,31 @@ namespace QuickEye.UxmlBridgeGen
                 var xElements = XDocument.Parse(uxml).Descendants();
                 var _styles = new HashSet<string>();
                 
-                foreach (var element in xElements)
+                foreach (var element in xElements.Where(e => e.Name == "Style"))
                 {
-                    var classes = element.Attribute("class")?.Value.Split(" ");
+                    var src = element.Attribute("src")?.Value;
+                    // var classes = element.Attribute("class")?.Value.Split(" ");
 
-                    if (classes is null)
+                    // if (classes is null)
+                    //     continue;
+
+                    if (src is null)
                         continue;
 
-                    foreach (var style in classes)
+                    string path = ExtractPath(src);
+
+                    if (path is null)
+                        continue;
+
+                    string filePath = Application.dataPath + "/" + path;
+                    string fileContents = File.ReadAllText(filePath);
+                    
+                    if (fileContents is null)
+                        continue;
+
+                    var s = ExtractStyleNames(fileContents);
+                        
+                    foreach (var style in s)
                         _styles.Add(style);
                 }
 
@@ -40,6 +62,28 @@ namespace QuickEye.UxmlBridgeGen
                 styles = null;
                 return false;
             }
+        }
+        
+        private static string ExtractPath(string input)
+        {
+            Match match = Regex.Match(input, @"project://database/Assets/(.*?)(\?|&|#)");
+
+            if (match.Success)
+                return match.Groups[1].Value.Replace("%20"," ");
+
+            return null; // Path not found in the string
+        }
+        
+        private static string[] ExtractStyleNames(string content)
+        {
+            var set = new HashSet<string>();
+            var matches = Regex.Matches(content, @"(^\..+?) ", RegexOptions.Multiline);
+
+            foreach (Match match in matches)
+                if (match.Success && !match.Groups[0].Value.Contains(":"))
+                    set.Add(match.Groups[0].Value.Replace(".", ""));
+
+            return set.ToArray(); // Path not found in the string
         }
     }
 }
