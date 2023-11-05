@@ -1,5 +1,7 @@
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -51,7 +53,7 @@ namespace QuickEye.UxmlBridgeGen
             var inlineSettings = InlineSettings.FromXml(uxml);
             var codeStyleRules = GetFinalCodeStyleRulesFor(inlineSettings);
 
-            if (!UxmlParser.TryGetElementsWithName(uxml, out var elements))
+            if (!UxmlParser.TryGetElementsWithName(uxml, out var elements, out var styles))
                 return;
 
             var validElements = elements
@@ -70,6 +72,7 @@ namespace QuickEye.UxmlBridgeGen
                 uxmlAsset.name,
                 CsNamespaceUtils.GetCsNamespace(uxmlFilePath, out _),
                 validElements,
+                styles,
                 codeStyleRules);
 
             if (File.Exists(genCsFilePath) &&
@@ -114,6 +117,34 @@ namespace QuickEye.UxmlBridgeGen
             return $"public {type} {fieldIdentifier};";
         }
 
+        private static string GetStyleFieldName(string style)
+        {
+            StringBuilder output = new StringBuilder();
+            bool makeNextCharUppercase = false;
+
+            foreach (char c in style)
+            {
+                if (c == '-' || c == '_')
+                {
+                    makeNextCharUppercase = true;
+                }
+                else
+                {
+                    if (makeNextCharUppercase)
+                    {
+                        output.Append(char.ToUpper(c));
+                        makeNextCharUppercase = false;
+                    }
+                    else
+                    {
+                        output.Append(c);
+                    }
+                }
+            }
+
+            return Regex.Replace(output.ToString(), @"[^A-Za-z0-9_]", string.Empty);
+        }
+
         private static string GetFieldAssigment(UxmlElement element, CodeStyleRules codeStyleRules)
         {
             var type = element.IsUnityEngineType ? element.TypeName : element.FullyQualifiedTypeName;
@@ -138,16 +169,22 @@ namespace QuickEye.UxmlBridgeGen
             return $"{varName} = {multiColumnEleVarName}.columns[\"{name}\"];";
         }
 
-        private static string CreateScriptContent(string className, string classNamespace, UxmlElement[] uxmlElements,
+        private static string CreateScriptContent(
+            string className, 
+            string classNamespace, 
+            UxmlElement[] uxmlElements,
+            string[] rawStyles,
             CodeStyleRules codeStyle)
         {
             var fields = uxmlElements.Select(e => GetFieldDeclaration(e, codeStyle));
             var assignments = uxmlElements.Select(e => GetFieldAssigment(e, codeStyle));
-
+            var styles = rawStyles.Select(style => $"public static readonly string {GetStyleFieldName(style)} = \"{style}\";");
+        
             var scriptContent = Resources.Load<TextAsset>(GenCsScriptTemplatePath).text;
             scriptContent = ReplaceClassNameTag(scriptContent, codeStyle.className.Apply(className));
             scriptContent = ReplacePackageVersionNameTag(scriptContent, PackageInfo.Version);
             scriptContent = ReplaceTagWithIndentedMultiline(scriptContent, "#FIELDS#", fields);
+            scriptContent = ReplaceTagWithIndentedMultiline(scriptContent, "#STYLES#", styles);
             scriptContent = ReplaceTagWithIndentedMultiline(scriptContent, "#ASSIGNMENTS#", assignments);
             scriptContent = ReplaceNamespaceTags(scriptContent, classNamespace);
             return scriptContent;

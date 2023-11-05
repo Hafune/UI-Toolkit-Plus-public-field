@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
     #NAMESPACE_START#
 public class #SCRIPT_NAME#
 {
+    #STYLES#
+    
     #FIELDS#
     
     public #SCRIPT_NAME#(VisualElement root)
