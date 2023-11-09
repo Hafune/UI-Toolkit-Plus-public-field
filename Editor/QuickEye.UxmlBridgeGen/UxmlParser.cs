@@ -77,11 +77,15 @@ namespace QuickEye.UxmlBridgeGen
         private static string[] ExtractStyleNames(string content)
         {
             var set = new HashSet<string>();
-            var matches = Regex.Matches(content, @"(^\..+?) ", RegexOptions.Multiline);
+            var matches = Regex.Matches(content, @"(^\..+) ", RegexOptions.Multiline);
 
             foreach (Match match in matches)
-                if (match.Success && !match.Groups[0].Value.Contains(":"))
+            {
+                var style = match.Groups[0].Value.Trim();
+                
+                if (match.Success && !style.Contains(":") && !style.Contains(" "))
                     set.Add(match.Groups[0].Value.Replace(".", "").Trim());
+            }
 
             return set.ToArray(); // Path not found in the string
         }
