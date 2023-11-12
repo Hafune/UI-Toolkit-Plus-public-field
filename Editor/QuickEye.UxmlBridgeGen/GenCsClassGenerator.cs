@@ -121,10 +121,11 @@ namespace QuickEye.UxmlBridgeGen
         {
             StringBuilder output = new StringBuilder();
             bool makeNextCharUppercase = false;
-
-            foreach (char c in style)
+            var s = style.Replace(" ", "_");
+            
+            foreach (char c in s)
             {
-                if (c == '-' || c == '_')
+                if (c == '-')
                 {
                     makeNextCharUppercase = true;
                 }
