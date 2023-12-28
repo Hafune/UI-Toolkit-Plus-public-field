@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -177,8 +178,10 @@ namespace QuickEye.UxmlBridgeGen
             string[] rawStyles,
             CodeStyleRules codeStyle)
         {
-            var fields = uxmlElements.Select(e => GetFieldDeclaration(e, codeStyle));
-            var assignments = uxmlElements.Select(e => GetFieldAssigment(e, codeStyle));
+            var uniques = new HashSet<string>();
+            var fields = uxmlElements.Select(e => GetFieldDeclaration(e, codeStyle)).Where(s => uniques.Add(s));
+            uniques.Clear();
+            var assignments = uxmlElements.Select(e => GetFieldAssigment(e, codeStyle)).Where(s => uniques.Add(s));
             var styles = rawStyles.Select(style => $"public static readonly string s_{GetStyleFieldName(style)} = \"{style}\";");
         
             var scriptContent = Resources.Load<TextAsset>(GenCsScriptTemplatePath).text;
