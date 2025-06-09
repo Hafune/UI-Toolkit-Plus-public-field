@@ -182,7 +182,7 @@ namespace QuickEye.UxmlBridgeGen
             var fields = uxmlElements.Select(e => GetFieldDeclaration(e, codeStyle)).Where(s => uniques.Add(s));
             uniques.Clear();
             var assignments = uxmlElements.Select(e => GetFieldAssigment(e, codeStyle)).Where(s => uniques.Add(s));
-            var styles = rawStyles.Select(style => $"public static readonly string s_{GetStyleFieldName(style)} = \"{style}\";");
+            var styles = rawStyles.Select(style => $"public const string s_{GetStyleFieldName(style)} = \"{style}\";");
         
             var scriptContent = Resources.Load<TextAsset>(GenCsScriptTemplatePath).text;
             scriptContent = ReplaceClassNameTag(scriptContent, codeStyle.className.Apply(className));
