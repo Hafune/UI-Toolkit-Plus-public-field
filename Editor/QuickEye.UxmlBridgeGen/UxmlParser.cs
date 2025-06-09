@@ -84,8 +84,10 @@ namespace QuickEye.UxmlBridgeGen
                 var style = match.Groups[0].Value.Trim();
                 
                 if (match.Success && !style.Contains(":"))
-                    set.Add(match.Groups[0].Value.Replace(".", "").Replace("{", "").Trim());
+                    foreach (var rawStyle in match.Groups[0].Value.Split("."))
+                        set.Add(rawStyle.Replace(".", "").Replace("{", "").Trim());
             }
+            set.Remove(string.Empty);
 
             return set.ToArray(); // Path not found in the string
         }
