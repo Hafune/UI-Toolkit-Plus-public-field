@@ -1,24 +1,42 @@
-private static void OnPostprocessAllAssets(
-    string[] importedAssets,
-    string[] deletedAssets,
-    string[] movedAssets,
-    string[] movedFromAssetPaths)
+using System.IO;
+using System.Linq;
+using UnityEditor;
+
+namespace QuickEye.UxmlBridgeGen
 {
-    foreach (var uxmlPath in importedAssets.Where(p => p.EndsWith(".uxml")))
+    internal class UxmlPostprocessor : AssetPostprocessor
     {
-        if (ShouldGenerateCsFile(uxmlPath))
-            GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
-    }
-
-    if (importedAssets.Any(p => p.EndsWith(".uss")))
-    {
-        var uxmlPaths = AssetDatabase.FindAssets("t:VisualTreeAsset")
-            .Select(AssetDatabase.GUIDToAssetPath);
-
-        foreach (var uxmlPath in uxmlPaths)
+        public static bool ShouldGenerateCsFile(string uxmlPath)
         {
-            if (ShouldGenerateCsFile(uxmlPath))
-                GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
+            return InlineSettingsUtils.TryGetGenCsFilePath(uxmlPath, out var genCsFilePath, out _) &&
+                   File.Exists(genCsFilePath);
         }
+
+
+        private static void OnPostprocessAllAssets(
+            string[] importedAssets,
+            string[] deletedAssets,
+            string[] movedAssets,
+            string[] movedFromAssetPaths)
+        {
+            foreach (var uxmlPath in importedAssets.Where(p => p.EndsWith(".uxml")))
+            {
+                if (ShouldGenerateCsFile(uxmlPath))
+                    GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
+            }
+
+            if (importedAssets.Any(p => p.EndsWith(".uss")))
+            {
+                var uxmlPaths = AssetDatabase.FindAssets("t:VisualTreeAsset")
+                    .Select(AssetDatabase.GUIDToAssetPath);
+
+                foreach (var uxmlPath in uxmlPaths)
+                {
+                    if (ShouldGenerateCsFile(uxmlPath))
+                        GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
+                }
+            }
+        }
+
     }
 }
