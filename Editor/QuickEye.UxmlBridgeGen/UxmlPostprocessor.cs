@@ -1,29 +1,24 @@
-using System.IO;
-using System.Linq;
-using UnityEditor;
-
-namespace QuickEye.UxmlBridgeGen
+private static void OnPostprocessAllAssets(
+    string[] importedAssets,
+    string[] deletedAssets,
+    string[] movedAssets,
+    string[] movedFromAssetPaths)
 {
-    internal class UxmlPostprocessor : AssetPostprocessor
+    foreach (var uxmlPath in importedAssets.Where(p => p.EndsWith(".uxml")))
     {
-        public static bool ShouldGenerateCsFile(string uxmlPath)
-        {
-            return InlineSettingsUtils.TryGetGenCsFilePath(uxmlPath, out var genCsFilePath, out _) &&
-                   File.Exists(genCsFilePath);
-        }
+        if (ShouldGenerateCsFile(uxmlPath))
+            GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
+    }
 
+    if (importedAssets.Any(p => p.EndsWith(".uss")))
+    {
+        var uxmlPaths = AssetDatabase.FindAssets("t:VisualTreeAsset")
+            .Select(AssetDatabase.GUIDToAssetPath);
 
-        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
-            string[] movedAssets,
-            string[] movedFromAssetPaths)
+        foreach (var uxmlPath in uxmlPaths)
         {
-            foreach (var uxmlPath in importedAssets.Where(p => p.EndsWith(".uxml")))
-            {
-                if (ShouldGenerateCsFile(uxmlPath))
-                {
-                    GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
-                }
-            }
+            if (ShouldGenerateCsFile(uxmlPath))
+                GenCsClassGenerator.GenerateGenCs(uxmlPath, false);
         }
     }
 }

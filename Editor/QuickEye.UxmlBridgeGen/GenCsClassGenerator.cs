@@ -77,7 +77,7 @@ namespace QuickEye.UxmlBridgeGen
                 codeStyleRules);
 
             if (File.Exists(genCsFilePath) &&
-                !IsEqualWithoutComments(File.ReadAllText(genCsFilePath), newScriptContent))
+                IsEqualWithoutComments(File.ReadAllText(genCsFilePath), newScriptContent))
                 return;
 
             File.WriteAllText(genCsFilePath, newScriptContent);
@@ -196,7 +196,7 @@ namespace QuickEye.UxmlBridgeGen
 
         private static bool IsEqualWithoutComments(string oldContent, string newContent)
         {
-            return TrimStartComments(oldContent) != TrimStartComments(newContent);
+            return TrimStartComments(oldContent) == TrimStartComments(newContent);
         }
 
         private static string TrimStartComments(string content)
