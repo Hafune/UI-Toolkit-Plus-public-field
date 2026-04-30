@@ -51,7 +51,7 @@ namespace QuickEye.UxmlBridgeGen
                 
                 elements = (from ele in xElements
                     let name = ele.Attribute("name")?.Value
-                    where name != null
+                    where !string.IsNullOrWhiteSpace(name)
                     select new UxmlElement(ele)).ToArray();
 
                 return true;
