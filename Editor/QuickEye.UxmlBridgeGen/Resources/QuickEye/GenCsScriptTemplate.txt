@@ -6,14 +6,17 @@
 using UnityEngine.UIElements;
 
     #NAMESPACE_START#
-public class #SCRIPT_NAME#
+public partial class #SCRIPT_NAME#
 {
+    public VisualElement Root { get; private set; }
+
     #STYLES#
     
     #FIELDS#
     
     public #SCRIPT_NAME#(VisualElement root)
     {
+        Root = root;
         #ASSIGNMENTS#
     }
 }
