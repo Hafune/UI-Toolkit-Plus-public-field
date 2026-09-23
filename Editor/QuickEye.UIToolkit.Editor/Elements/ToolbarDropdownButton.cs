@@ -4,7 +4,8 @@ using UnityEngine.UIElements;
 
 namespace QuickEye.UIToolkit.Editor
 {
-    public class ToolbarDropdownButton : ToolbarButton, IToolbarMenuElement
+    [UxmlElement]
+    public partial class ToolbarDropdownButton : ToolbarButton, IToolbarMenuElement
     {
         public new const string ussClassName = "qe-toolbar-dropdown-button";
         public const string iconUssClassName = ussClassName + "__icon";
@@ -17,6 +18,7 @@ namespace QuickEye.UIToolkit.Editor
         
         public DropdownMenu menu { get; }
 
+        [UxmlAttribute("text")]
         public new string text
         {
             get => _label.text;
@@ -53,24 +55,6 @@ namespace QuickEye.UIToolkit.Editor
             _dropdownArea.AddToClassList(dropdownAreaUssClassName);
             _dropdownArea.Add(dropdownIcon);
             Add(_dropdownArea);
-        }
-
-        private new class UxmlFactory : UxmlFactory<ToolbarDropdownButton, UxmlTraits> { }
-
-        private new class UxmlTraits : VisualElement.UxmlTraits
-        {
-            UxmlStringAttributeDescription _text = new UxmlStringAttributeDescription { name = "text" };
-
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get { yield break; }
-            }
-
-            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
-            {
-                base.Init(ve, bag, cc);
-                ((ToolbarDropdownButton)ve).text = _text.GetValueFromBag(bag, cc);
-            }
         }
 
     }

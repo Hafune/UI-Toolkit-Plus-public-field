@@ -4,7 +4,8 @@ using UnityEngine.UIElements;
 
 namespace QuickEye.UIToolkit
 {
-    public class Tab : BaseBindable<bool>
+    [UxmlElement]
+    public partial class Tab : BaseBindable<bool>
     {
         public const string ClassName = "qe-tab";
         public const string TextClassName = ClassName + "__text";
@@ -43,12 +44,14 @@ namespace QuickEye.UIToolkit
             }
         }
 
+        [UxmlAttribute("is-reorderable")]
         public bool IsReorderable
         {
             get => Reorderable.target == this;
             set => this.ToggleManipulator(Reorderable, value);
         }
 
+        [UxmlAttribute("text")]
         public string Text
         {
             get => _textElement.text;
@@ -56,6 +59,13 @@ namespace QuickEye.UIToolkit
         }
 
         public bool IsDragged => Reorderable.IsDragged(this);
+
+        [UxmlAttribute("value")]
+        public bool UxmlValue
+        {
+            get => value;
+            set => SetValueWithoutNotify(value);
+        }
 
         protected virtual void PointerDownHandler(PointerDownEvent evt)
         {
@@ -86,29 +96,5 @@ namespace QuickEye.UIToolkit
                     tab.SetValueWithoutNotify(false);
         }
 
-        public new class UxmlFactory : UxmlFactory<Tab, UxmlTraits> { }
-
-        public new class UxmlTraits : BaseBindableTraits<bool, UxmlBoolAttributeDescription>
-        {
-            private readonly UxmlBoolAttributeDescription _isReorderable = new()
-            {
-                name = "is-reorderable"
-            };
-
-            private readonly UxmlStringAttributeDescription _text = new() { name = "text" };
-
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get { yield break; }
-            }
-
-            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
-            {
-                base.Init(ve, bag, cc);
-                var tab = (Tab)ve;
-                tab.Text = _text.GetValueFromBag(bag, cc);
-                tab.IsReorderable = _isReorderable.GetValueFromBag(bag, cc);
-            }
-        }
     }
 }

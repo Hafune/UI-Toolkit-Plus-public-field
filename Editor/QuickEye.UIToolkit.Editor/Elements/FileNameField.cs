@@ -6,7 +6,8 @@ using System.IO;
 
 namespace QuickEye.UIToolkit
 {
-    public class FileNameField : TextValueField<string>
+    [UxmlElement]
+    public partial class FileNameField : TextValueField<string>
     {
         public FileNameField() : base(null, -1, new FileNameInput()) { }
 
@@ -36,6 +37,5 @@ namespace QuickEye.UIToolkit
             protected override string StringToValue(string str) => str;
         }
 
-        public new class UxmlFactory : UxmlFactory<FileNameField, UxmlTraits> { }
     }
 }

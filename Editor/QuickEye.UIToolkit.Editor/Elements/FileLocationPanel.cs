@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 namespace QuickEye.UIToolkit.Editor
 {
+    [UxmlElement]
     public partial class FileLocationPanel : VisualElement
     {
         private const string UxmlPath = "QuickEye/FileLocationPanel/FileLocationPanel";
@@ -76,6 +77,5 @@ namespace QuickEye.UIToolkit.Editor
             return false;
         }
 
-        public new class UxmlFactory : UxmlFactory<FileLocationPanel, UxmlTraits> { }
     }
 }

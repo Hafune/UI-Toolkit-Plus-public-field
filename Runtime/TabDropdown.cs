@@ -3,7 +3,8 @@ using UnityEngine.UIElements;
 
 namespace QuickEye.UIToolkit
 {
-    public class TabDropdown : Tab
+    [UxmlElement]
+    public partial class TabDropdown : Tab
     {
         private event Action<IGenericMenu> _beforeMenuShow;
         public event Action<IGenericMenu> BeforeMenuShow
@@ -62,8 +63,5 @@ namespace QuickEye.UIToolkit
             _dropdownArea.ToggleDisplayStyle(_beforeMenuShow != null);
         }
         
-        public new class UxmlFactory : UxmlFactory<TabDropdown, UxmlTraits> { }
-
-        public new class UxmlTraits : Tab.UxmlTraits { }
     }
 }

@@ -3,7 +3,8 @@ using UnityEngine.UIElements;
 
 namespace QuickEye.UIToolkit
 {
-    public class TabGroup : VisualElement
+    [UxmlElement]
+    public partial class TabGroup : VisualElement
     {
         public const string ClassName = "qe-tab-group";
         public const string VerticalModeClassName = ClassName + "--vertical";
@@ -25,6 +26,7 @@ namespace QuickEye.UIToolkit
         public ScrollView ScrollView { get; private set; }
         public override VisualElement contentContainer => ScrollView.contentContainer;
 
+        [UxmlAttribute("mode")]
         public TabGroupMode Mode
         {
             get => _mode;
@@ -100,24 +102,6 @@ namespace QuickEye.UIToolkit
                 _horizontalScroller.RemoveFromHierarchy();
         }
 
-        private new class UxmlFactory : UxmlFactory<TabGroup, UxmlTraits> { }
-
-        public new class UxmlTraits : VisualElement.UxmlTraits
-        {
-            private readonly UxmlEnumAttributeDescription<TabGroupMode> _mode = new() { name = "mode" };
-
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get { yield return new UxmlChildElementDescription(typeof(VisualElement)); }
-            }
-
-            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
-            {
-                base.Init(ve, bag, cc);
-                var group = (TabGroup)ve;
-                group.Mode = _mode.GetValueFromBag(bag, cc);
-            }
-        }
     }
 
     public enum TabGroupMode
